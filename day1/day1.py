@@ -1,8 +1,13 @@
+'''
+AOC 2022 Day 1 solution
+'''
 import sys
 
-
-def main(fname):
-    with open(fname, "r") as infile:
+def main(fname: str) -> None:
+    '''
+    Part 2 Main
+    '''
+    with open(fname, "r", encoding="utf-8") as infile:
         lines = infile.readlines()
 
         elf_totals = []
@@ -10,9 +15,9 @@ def main(fname):
         index = 1
         for line in lines:
             try:
-                x = int(line)
-                total += x
-            except:
+                cval = int(line)
+                total += cval
+            except ValueError:
                 elf_totals.append(total)
                 elf_totals = sorted(elf_totals, reverse=True)[:3]
                 index += 1
