@@ -1,4 +1,6 @@
 import sys
+
+
 def main(fname):
     with open(fname, "r") as infile:
         lines = infile.readlines()
@@ -16,6 +18,7 @@ def main(fname):
                 index += 1
                 total = 0
         print(f"Totals: {elf_totals} sum {sum(elf_totals)}")
+
 
 if __name__ == "__main__":
     main(sys.argv[1])

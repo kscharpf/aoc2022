@@ -9,11 +9,12 @@ LOSE = 0
 DRAW = 3
 WIN = 6
 
-MOVES = {'A':ROCK, 'B':PAPER, 'C': SCIZZORS, 'X':ROCK, 'Y':PAPER, 'Z':SCIZZORS}
-MOVES2 = {'A':ROCK, 'B':PAPER, 'C': SCIZZORS}
-RESULT = {'X':LOSE, 'Y': DRAW, 'Z': WIN}
-ADVANTAGE = {ROCK:SCIZZORS, SCIZZORS:PAPER, PAPER:ROCK}
-DISADVANTAGE = {SCIZZORS:ROCK, PAPER:SCIZZORS, ROCK:PAPER}
+MOVES = {"A": ROCK, "B": PAPER, "C": SCIZZORS, "X": ROCK, "Y": PAPER, "Z": SCIZZORS}
+MOVES2 = {"A": ROCK, "B": PAPER, "C": SCIZZORS}
+RESULT = {"X": LOSE, "Y": DRAW, "Z": WIN}
+ADVANTAGE = {ROCK: SCIZZORS, SCIZZORS: PAPER, PAPER: ROCK}
+DISADVANTAGE = {SCIZZORS: ROCK, PAPER: SCIZZORS, ROCK: PAPER}
+
 
 def winner(oppo_move, my_move):
     if oppo_move == my_move:
@@ -31,6 +32,7 @@ def winner(oppo_move, my_move):
     else:
         return 0
 
+
 def part1_main(fname):
     with open(fname, "r") as infile:
         lines = infile.readlines()
@@ -42,6 +44,7 @@ def part1_main(fname):
             total_points += points
 
         print(f"Total: {total_points}")
+
 
 def part2_main(fname):
     with open(fname, "r") as infile:
@@ -58,6 +61,7 @@ def part2_main(fname):
                 total_points += ADVANTAGE[oppo_move] + LOSE
 
         print(f"Total: {total_points}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
