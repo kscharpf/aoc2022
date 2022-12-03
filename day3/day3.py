@@ -3,7 +3,7 @@ Day3 Python solution
 """
 import argparse
 
-def p1_main(fname):
+def p1_main(fname: str) -> None:
     """
     Part 1 solution main
     """
@@ -24,7 +24,7 @@ def p1_main(fname):
         print(f"Total: {total}")
 
 
-def p2_main(fname):
+def p2_main(fname: str) -> None:
     """
     Part 2 solution main
     """
