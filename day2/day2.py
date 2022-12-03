@@ -1,4 +1,7 @@
-import sys
+"""
+AOC 2022 Day 2 Solution
+"""
+
 import argparse
 
 ROCK = 1
@@ -10,31 +13,32 @@ DRAW = 3
 WIN = 6
 
 MOVES = {"A": ROCK, "B": PAPER, "C": SCIZZORS, "X": ROCK, "Y": PAPER, "Z": SCIZZORS}
-MOVES2 = {"A": ROCK, "B": PAPER, "C": SCIZZORS}
 RESULT = {"X": LOSE, "Y": DRAW, "Z": WIN}
 ADVANTAGE = {ROCK: SCIZZORS, SCIZZORS: PAPER, PAPER: ROCK}
 DISADVANTAGE = {SCIZZORS: ROCK, PAPER: SCIZZORS, ROCK: PAPER}
 
-
-def winner(oppo_move, my_move):
-    if oppo_move == my_move:
-        return 3
-    elif oppo_move == ROCK and my_move == PAPER:
-        return 6
-    elif oppo_move == ROCK and my_move == SCIZZORS:
-        return 0
-    elif oppo_move == PAPER and my_move == ROCK:
-        return 0
-    elif oppo_move == PAPER and my_move == SCIZZORS:
-        return 6
-    elif oppo_move == SCIZZORS and my_move == ROCK:
-        return 6
-    else:
-        return 0
+WINNER = {
+    (ROCK, PAPER): 6,
+    (ROCK, SCIZZORS): 0,
+    (PAPER, ROCK): 0,
+    (PAPER, SCIZZORS): 6,
+    (SCIZZORS, ROCK): 6,
+    (SCIZZORS, PAPER): 0,
+}
 
 
-def part1_main(fname):
-    with open(fname, "r") as infile:
+def winner(oppo_move: int, my_move: int) -> int:
+    """
+    Return the win value of the opponents move and my move
+    """
+    return WINNER.get((oppo_move, my_move), DRAW)
+
+
+def part1_main(fname: str) -> None:
+    """
+    Part1 solution
+    """
+    with open(fname, "r", encoding="utf-8") as infile:
         lines = infile.readlines()
         total_points = 0
         for line in lines:
@@ -46,8 +50,11 @@ def part1_main(fname):
         print(f"Total: {total_points}")
 
 
-def part2_main(fname):
-    with open(fname, "r") as infile:
+def part2_main(fname: str) -> None:
+    """
+    Part2 solution
+    """
+    with open(fname, "r", encoding="utf-8") as infile:
         lines = infile.readlines()
         total_points = 0
         for line in lines:
