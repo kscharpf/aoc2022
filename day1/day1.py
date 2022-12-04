@@ -1,12 +1,13 @@
-'''
+"""
 AOC 2022 Day 1 solution
-'''
+"""
 import sys
 
+
 def main(fname: str) -> None:
-    '''
+    """
     Part 2 Main
-    '''
+    """
     with open(fname, "r", encoding="utf-8") as infile:
         lines = infile.readlines()
 
