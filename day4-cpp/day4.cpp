@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-bool overlap(int s1_start, int s1_end, int s2_start, int s2_end) {
+static bool overlap(int s1_start, int s1_end, int s2_start, int s2_end) {
   if (s1_start <= s2_start && s1_end >= s2_start) {
     return true;
   }
