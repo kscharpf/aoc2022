@@ -22,6 +22,10 @@ def main(fname: str) -> None:
                 elf_totals = sorted(elf_totals, reverse=True)[:3]
                 index += 1
                 total = 0
+        if total > 0:
+            elf_totals.append(total)
+            elf_totals = sorted(elf_totals, reverse=True)[:3]
+
         print(f"Totals: {elf_totals} sum {sum(elf_totals)}")
 
 
