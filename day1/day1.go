@@ -37,6 +37,12 @@ func main() {
 		total += value
 	}
 
+	if total > 0 {
+		elfTotals = append(elfTotals, total)
+		sort.Sort(sort.Reverse(sort.IntSlice(elfTotals)))
+		elfTotals = elfTotals[:int(math.Min(3, float64(len(elfTotals))))]
+	}
+
 	sumTotal := 0
 	for _, val := range elfTotals {
 		sumTotal += val
