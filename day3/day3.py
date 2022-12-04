@@ -3,6 +3,7 @@ Day3 Python solution
 """
 import argparse
 
+
 def p1_main(fname: str) -> None:
     """
     Part 1 solution main
