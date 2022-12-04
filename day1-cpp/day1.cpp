@@ -1,8 +1,8 @@
 #include <fstream>
 #include <iostream>
+#include <numeric>
 #include <string>
 #include <vector>
-#include <numeric>
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
   if (currentTotalCalories) elfCalories.push_back(currentTotalCalories);
   std::sort(elfCalories.begin(), elfCalories.end(), std::greater<int32_t>());
 
-  std::cout << "Top 3 Calories: " << std::accumulate(elfCalories.begin(), elfCalories.begin() + 3, 0);
+  std::cout << "Top 3 Calories: "
+            << std::accumulate(elfCalories.begin(), elfCalories.begin() + 3, 0);
   return 0;
 }
