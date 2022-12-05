@@ -5,10 +5,8 @@ import argparse as ap
 import re
 from typing import List, Tuple
 
-CRATE_MOVER_9000 = "CrateMover9000"
-CRATE_MOVER_9001 = "CrateMover9001"
 
-def parse_drawing_line(line_index: int, line: str) -> List[Tuple[str, int, int]]:
+def parse_drawing_line(line: str) -> List[Tuple[str, int]]:
     """
     A line in the drawing looks like
     <spaces>OPEN_BRACKET CHAR CLOSE_BRACKET<spaces>OPEN_BRACKET CHAR CLOSE_BRACKET...
@@ -20,46 +18,64 @@ def parse_drawing_line(line_index: int, line: str) -> List[Tuple[str, int, int]]
     line = line.rstrip("\n")
     i = 0
     stack_num = 1
-    crates: List[Tuple[str, int, int]] = []
+    crates: List[Tuple[str, int]] = []
 
     while i < len(line):
-        if line[i] == ' ':
+        if line[i] == " ":
             i += 4
             stack_num += 1
-        elif line[i] == '[':
-            crates.append((line[i+1], stack_num, line_index))
+        elif line[i] == "[":
+            crates.append((line[i + 1], stack_num))
             i += 4
             stack_num += 1
     print(f"Line {line} has crates {crates}")
     return crates
 
-def move_crates_9001(crates: List[List[str]], src: int, dest: int, num_crates: int) -> None:
+
+def move_crates_9001(
+    crates: List[List[str]], src: int, dest: int, num_crates: int
+) -> None:
+    """
+    Move num_crates from top of src stack to dest stack
+    """
     crates_to_move = crates[src - 1][-num_crates:]
     crates[src - 1] = crates[src - 1][:-num_crates]
     crates[dest - 1].extend(crates_to_move)
 
-def move_crates_9000(crates: List[List[str]], src: int, dest: int, num_crates: int) -> None:
+
+def move_crates_9000(
+    crates: List[List[str]], src: int, dest: int, num_crates: int
+) -> None:
+    """
+    Move num_crates from top of src stack to dest stack - one at a time
+    """
     for _i in range(num_crates):
-        crate = crates[src-1].pop()
-        crates[dest-1].append(crate)
+        crate = crates[src - 1].pop()
+        crates[dest - 1].append(crate)
+
 
 def main(fname: str, is_crate_mover_9001: bool) -> None:
+    """
+    Main method for implementing the crate mover.
+    fname: input filename
+    is_crate_mover_9001: bool - use CrateMover9001 behavior
+    """
     with open(fname, "r", encoding="utf-8") as infile:
         lines = infile.readlines()
         move_lines = []
         stacks: List[List[str]] = []
         for index, line in enumerate(lines):
-            new_crates = parse_drawing_line(index, line)
+            new_crates = parse_drawing_line(line)
             if not new_crates:
-                move_lines = lines[index+2:]
+                move_lines = lines[index + 2 :]
                 break
             for crate in new_crates:
-                label, stack_num, height = crate
+                label, stack_num = crate
                 for i in range(len(stacks), stack_num, 1):
                     stacks.append([])
                 stacks[stack_num - 1].append(label)
-        for i in range(len(stacks)):
-            stacks[i] = stacks[i][::-1]
+        for i, stack in enumerate(stacks):
+            stacks[i] = stack[::-1]
 
         move_re = re.compile(r"move (\d+) from (\d+) to (\d+)")
         for index, line in enumerate(move_lines):
@@ -73,9 +89,6 @@ def main(fname: str, is_crate_mover_9001: bool) -> None:
                     move_crates_9001(stacks, from_stack, to_stack, num_crates_to_move)
                 else:
                     move_crates_9000(stacks, from_stack, to_stack, num_crates_to_move)
-                #for i in range(num_crates_to_move):
-                    #val = stacks[from_stack-1].pop()
-                    #stacks[to_stack-1].append(val)
         for index, stack in enumerate(stacks):
             print(f"Top of stack {index+1} is {stack[-1]}")
         result_str = "".join([stack[-1] for stack in stacks])
