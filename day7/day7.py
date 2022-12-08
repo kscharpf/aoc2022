@@ -27,18 +27,6 @@ class FileSystemNode:
         self.level = level
         self.ftype = ftype
 
-    def add_directory(self, _dirname: str) -> None:
-        """
-        No-op
-        """
-        assert False
-
-    def add_file(self, _fname: str, _f_sz: int) -> None:
-        """
-        No-op
-        """
-        assert False
-
     def walk_dirs(self) -> List["DirectoryNode"]:
         """
         Returns a list of all directories underneath this node
@@ -116,7 +104,7 @@ class DirectoryNode(FileSystemNode):
         self.cd_directories[dirname] = DirectoryNode(dirname, self, self.level + 1)
         self.directories[dirname] = self.cd_directories[dirname]
 
-    def add_file(self, fname: str, sz: int) -> None:
+    def add_file(self, fname: str, f_sz: int) -> None:
         """
         Append a file object to this directory
         Params:
@@ -124,7 +112,7 @@ class DirectoryNode(FileSystemNode):
             sz: size of the file
         Returns: None
         """
-        self.files.append(FileNode(fname, sz, self.level))
+        self.files.append(FileNode(fname, f_sz, self.level))
 
 
 def change_directory(dnode: DirectoryNode, newdir: str) -> Optional[DirectoryNode]:
