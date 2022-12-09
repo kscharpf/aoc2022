@@ -2,6 +2,7 @@
 Advent of Code 2022 Day 8 Solution
 """
 import argparse as ap
+from functools import reduce
 from typing import List, Tuple, Set
 
 
@@ -104,8 +105,7 @@ def main(fname: str) -> None:
         for i in range(len(lines)):
             for j in range(len(lines[0])):
                 visible = get_visible_positions_from_tree(lines, i, j)
-                vis_up, vis_down, vis_left, vis_right = visible
-                beauty = vis_up * vis_down * vis_left * vis_right
+                beauty = reduce(lambda x, y: x * y, visible)
                 if beauty > best_value:
                     best_value = beauty
                     best_position = (i, j)
