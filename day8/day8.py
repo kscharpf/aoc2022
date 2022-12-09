@@ -1,88 +1,112 @@
+"""
+Advent of Code 2022 Day 8 Solution
+"""
 import argparse as ap
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Set
 
 
-def get_visible_positions(
-    lines: List[str], visible: Dict[Tuple[int, int], bool]
-) -> None:
+def get_visible_positions(lines: List[str], visible: Set[Tuple[int, int]]) -> None:
+    """
+    Find all positions visible from the edges
+    Params:
+        lines: list of strings defining tree heights
+        visible:
+    """
     for row, line in enumerate(lines):
         highest_so_far = ord("0") - 1
-        for col, c in enumerate(line):
-            if ord(c) > highest_so_far:
-                visible[(row, col)] = True
-                highest_so_far = ord(c)
+        for col, char in enumerate(line):
+            if ord(char) > highest_so_far:
+                visible.add((row, col))
+                highest_so_far = ord(char)
 
         highest_so_far = ord("0") - 1
         for col in range(len(line) - 1, -1, -1):
             if ord(line[col]) > highest_so_far:
-                visible[(row, col)] = True
+                visible.add((row, col))
                 highest_so_far = ord(line[col])
     for col in range(len(lines[0])):
         highest_so_far = ord("0") - 1
-        for row in range(len(lines)):
-            if ord(lines[row][col]) > highest_so_far:
-                visible[(row, col)] = True
-                highest_so_far = ord(lines[row][col])
+        for row, line in enumerate(lines):
+            if ord(line[col]) > highest_so_far:
+                visible.add((row, col))
+                highest_so_far = ord(line[col])
         highest_so_far = ord("0") - 1
         for row in range(len(lines) - 1, -1, -1):
             if ord(lines[row][col]) > highest_so_far:
-                visible[(row, col)] = True
+                visible.add((row, col))
                 highest_so_far = ord(lines[row][col])
 
 
 def get_visible_positions_from_tree(
-    lines: List[str], row: int, col: int
+    lines: List[str], src_row: int, src_col: int
 ) -> Tuple[int, int, int, int]:
-    r = row - 1
-    src_height = lines[row][col]
+    """
+    Find all trees visible in each direction from a given
+    source tree.
+    Params:
+        list: list of strings defining the forest
+        src_row: row number of the source tree
+        src_col: col number of the source tree
+    Returns:
+        Tuple: number of visible trees in each direction,
+        up, down, left, right
+    """
+    row = src_row - 1
+    src_height = lines[src_row][src_col]
     num_up = 1
-    while r >= 0 and lines[r][col] < src_height:
+    while row >= 0 and lines[row][src_col] < src_height:
         num_up += 1
-        r -= 1
-    if r < 0:
+        row -= 1
+    if row < 0:
         num_up -= 1
-    r = row + 1
+    row = src_row + 1
     num_down = 1
-    while r < len(lines) and lines[r][col] < src_height:
+    while row < len(lines) and lines[row][src_col] < src_height:
         num_down += 1
-        r += 1
-    if r == len(lines):
+        row += 1
+    if row == len(lines):
         num_down -= 1
 
-    c = col - 1
+    col = src_col - 1
     num_left = 1
-    while c >= 0 and lines[row][c] < src_height:
+    while col >= 0 and lines[src_row][col] < src_height:
         num_left += 1
-        c -= 1
-    if c < 0:
+        col -= 1
+    if col < 0:
         num_left -= 1
     num_right = 1
-    c = col + 1
-    while c < len(lines[row]) and lines[row][c] < src_height:
+    col = src_col + 1
+    while col < len(lines[src_row]) and lines[src_row][col] < src_height:
         num_right += 1
-        c += 1
-    if c == len(lines[row]):
+        col += 1
+    if col == len(lines[src_row]):
         num_right -= 1
     return (num_up, num_down, num_left, num_right)
 
 
 def main(fname: str) -> None:
+    """
+    Main function for the AOC 2022 solution
+    Params:
+        fname: filename of input text
+    Returns: None
+    """
     with open(fname, "r", encoding="utf-8") as infile:
         lines = [line.rstrip("\n") for line in infile.readlines()]
-        visible_positions: Dict[Tuple[int, int], bool] = {}
+        visible_positions: Set[Tuple[int, int]] = set()
         get_visible_positions(lines, visible_positions)
-        print(f"Num Visible Trees: {len(visible_positions.keys())}")
-        print(sorted(list(visible_positions.keys())))
+        print(f"Num Visible Trees: {len(visible_positions)}")
+        print(sorted(visible_positions))
 
         best_value = 0
         best_position = None
         for i in range(len(lines)):
             for j in range(len(lines[0])):
                 visible = get_visible_positions_from_tree(lines, i, j)
-                up, down, left, right = visible
-                # print(f"Position {i,j}: {visible}")
-                if up * down * left * right > best_value:
-                    best_value = up * down * left * right
+                vis_up, vis_down, vis_left, vis_right = visible
+                beauty = vis_up * vis_down * vis_left * vis_right
+                if beauty > best_value:
+                    best_value = beauty
                     best_position = (i, j)
         print(f"Best Position is {best_position} with value {best_value}")
 
