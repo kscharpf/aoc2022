@@ -100,16 +100,12 @@ def main(fname: str) -> None:
         print(f"Num Visible Trees: {len(visible_positions)}")
         print(sorted(visible_positions))
 
-        best_value = 0
-        best_position = None
-        for i in range(len(lines)):
-            for j in range(len(lines[0])):
-                visible = get_visible_positions_from_tree(lines, i, j)
-                beauty = reduce(lambda x, y: x * y, visible)
-                if beauty > best_value:
-                    best_value = beauty
-                    best_position = (i, j)
-        print(f"Best Position is {best_position} with value {best_value}")
+        all_beauty = [
+            reduce(lambda x, y: x * y, get_visible_positions_from_tree(lines, i, j))
+            for j in range(len(lines[0]))
+            for i in range(len(lines))
+        ]
+        print(f"Best Value {max(all_beauty)}")
 
 
 if __name__ == "__main__":
