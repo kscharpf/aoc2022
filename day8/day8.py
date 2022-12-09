@@ -11,6 +11,7 @@ def get_visible_positions(lines: List[str], visible: Set[Tuple[int, int]]) -> No
     Params:
         lines: list of strings defining tree heights
         visible:
+    Returns: None
     """
     for row, line in enumerate(lines):
         highest_so_far = ord("0") - 1
