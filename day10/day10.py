@@ -3,33 +3,23 @@ Python solution for Advent of Code 2022 Day 10
 """
 import argparse as ap
 from typing import List, Union
+from dataclasses import dataclass
 
-
+@dataclass
 class NoopInstruction:
     """
     No-op abstraction
     """
+    cycles_remaining: int
+    value: int
 
-    def __init__(self) -> None:
-        """
-        constructor for NoopInstruction
-        """
-        self.cycles_remaining = 1
-        self.value = 0
-
-
+@dataclass
 class AddxInstruction:
     """
     addx instruction abstraction
     """
-
-    def __init__(self, value: int) -> None:
-        """
-        constructor for AddxInstruction
-        """
-        self.cycles_remaining = 2
-        self.value = value
-
+    cycles_remaining: int
+    value: int
 
 Instruction = Union[NoopInstruction, AddxInstruction]
 
@@ -45,9 +35,9 @@ def build_instruction(insstr: str) -> Instruction:
     fields = insstr.split(" ")
 
     if fields[0] == "addx":
-        return AddxInstruction(int(fields[1]))
+        return AddxInstruction(2, int(fields[1]))
 
-    return NoopInstruction()
+    return NoopInstruction(1, 0)
 
 
 class StateMachine:
