@@ -9,6 +9,7 @@ class NoopInstruction:
     """
     No-op abstraction
     """
+
     def __init__(self) -> None:
         """
         constructor for NoopInstruction
@@ -21,6 +22,7 @@ class AddxInstruction:
     """
     addx instruction abstraction
     """
+
     def __init__(self, value: int) -> None:
         """
         constructor for AddxInstruction
@@ -28,7 +30,11 @@ class AddxInstruction:
         self.cycles_remaining = 2
         self.value = value
 
-def build_instruction(insstr: str) -> Union[NoopInstruction, AddxInstruction]:
+
+Instruction = Union[NoopInstruction, AddxInstruction]
+
+
+def build_instruction(insstr: str) -> Instruction:
     """
     Create instruction object from line string
     Params:
@@ -48,7 +54,8 @@ class StateMachine:
     """
     CPU abstraction
     """
-    def __init__(self, program: List[Union[NoopInstruction, AddxInstruction]]) -> None:
+
+    def __init__(self, program: List[Instruction]) -> None:
         """
         Constructor for the state machine
         Params:
