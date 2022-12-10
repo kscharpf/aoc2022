@@ -35,41 +35,57 @@ def build_instruction(insstr: str) -> Union[NoopInstruction, AddxInstruction]:
 class StateMachine:
     def __init__(self, program: List[Union[NoopInstruction, AddxInstruction]]) -> None:
         self.program = program
+        self.crt: List[str] = []
 
-    def run(self, num_cycles: int, cycles_of_interest: List[int]) -> int:
+    def draw_pixel(self, cycle: int, sprite_x: int) -> None:
+        row_num = (cycle - 1) // 40
+        if row_num >= len(self.crt):
+            self.crt.append("")
+        draw_col = (cycle - 1) % 40
+        if abs(sprite_x - draw_col) <= 1:
+            self.crt[-1] += "#"
+        else:
+            self.crt[-1] += "."
+
+    def display(self) -> str:
+        return "\n".join(self.crt)
+
+    def run(self, cycles_of_interest: List[int]) -> int:
         active_instruction = self.program[0]
         self.program = self.program[1:]
         total = 0
         sprite_x = 1
-        for cycle in range(1, num_cycles):
+        cycle = 1
+        done = False
+        while not done:
+            self.draw_pixel(cycle, sprite_x)
             active_instruction.cycles_remaining -= 1
-            # print(f"Cycle {cycle} Begin Active Instruction {active_instruction} xval {sprite_x}")
             if cycle in cycles_of_interest:
                 total += cycle * sprite_x
             if active_instruction.cycles_remaining == 0:
                 sprite_x += active_instruction.value
 
                 if not self.program:
-                    print(f"Program Complete")
-                    return total
+                    break
+
                 active_instruction = self.program[0]
                 self.program = self.program[1:]
-            # print(f"Cycle {cycle} AFTER xval {sprite_x} ")
+            cycle += 1
         return total
 
 
-def main(fname: str, num_cycles: int) -> None:
+def main(fname: str) -> None:
     with open(fname, "r", encoding="utf-8") as infile:
         lines = [line.rstrip() for line in infile.readlines()]
         program = [build_instruction(line) for line in lines]
         machine = StateMachine(program)
-        result = machine.run(num_cycles, [20, 60, 100, 140, 180, 220])
+        result = machine.run([20, 60, 100, 140, 180, 220])
         print(f"Part1 Solution: {result}")
+        print(machine.display())
 
 
 if __name__ == "__main__":
     parser = ap.ArgumentParser()
     parser.add_argument("filename")
-    parser.add_argument("--num-cycles", default=20, type=int)
     args = parser.parse_args()
-    main(args.filename, args.num_cycles)
+    main(args.filename)
