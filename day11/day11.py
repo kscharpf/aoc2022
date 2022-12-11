@@ -80,12 +80,13 @@ class MonkeyHolding:
     def add_item(self, item: int) -> None:
         self.item_worries.append(item)
 
-    def inspect1(
-        self, all_monkeys: Dict[int, "MonkeyHolding"], worry_drop: int
+    def inspect(
+        self, all_monkeys: Dict[int, "MonkeyHolding"], worry_drop: int, modulus: int,
     ) -> None:
         for old in self.item_worries:  # ignore: unused-variable
             new_val = eval(self.expression.eval_str)
             new_val //= worry_drop
+            new_val %= modulus
             # print(f"Inspecting item {old} new value {new_val}")
             self.test_operation.execute(new_val, all_monkeys)
             self.total_inspections += 1
@@ -112,10 +113,12 @@ def main(fname: str, worry_drop: int, num_rounds: int) -> None:
         lines = [line.rstrip("\n") for line in infile.readlines()]
         i = 0
         monkey_holdings: Dict[int, MonkeyHolding] = {}
+        test_prod = 1
         while i < len(lines):
             if lines[i]:
                 monkey_id, monkey = parse_monkey(lines[i:])
                 monkey_holdings[monkey_id] = monkey
+                test_prod *= monkey.test_operation.divisor
                 i += 6
             else:
                 i += 1
@@ -123,7 +126,7 @@ def main(fname: str, worry_drop: int, num_rounds: int) -> None:
         monkeys = sorted(list(monkey_holdings.keys()))
         for _inspection_round in range(1, num_rounds + 1):
             for monkey_id in monkeys:
-                monkey_holdings[monkey_id].inspect1(monkey_holdings, worry_drop)
+                monkey_holdings[monkey_id].inspect(monkey_holdings, worry_drop, test_prod)
             # print("------------------------------------")
             # print(f"Results after round {inspection_round}")
             # print("------------------------------------")
