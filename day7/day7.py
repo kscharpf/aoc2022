@@ -3,96 +3,62 @@ This module processes the Day 7 Advent of Code challenge.
 """
 import argparse as ap
 from typing import Tuple, List, Dict, Optional
+from dataclasses import dataclass
 
 
-class FileSystemNode:
-    """
-    File Tree node abstraction - could be a file or a directory
-    """
-
-    def __init__(self, name: str, file_sz: int, level: int, ftype: str) -> None:
-        """
-        Construct a FileSystemNode object
-        Params:
-            name: Name of the file or directory
-            sz: Size of the file or directory
-            level: Depth of this node in the tree
-            ftype: Type of file or directory
-        """
-        self.name = name
-        self.file_sz = file_sz
-        self.directories: Dict[str, Optional[DirectoryNode]] = {}
-        self.cd_directories: Dict[str, Optional[DirectoryNode]] = {}
-        self.files: List[FileNode] = []
-        self.level = level
-        self.ftype = ftype
-
-    def walk_dirs(self) -> List["DirectoryNode"]:
-        """
-        Returns a list of all directories underneath this node
-        """
-        all_dirs: List["DirectoryNode"] = []
-        for f_dir in self.cd_directories.values():
-            if f_dir and f_dir.ftype == "DIR":
-                all_dirs.append(f_dir)
-                all_dirs.extend(f_dir.walk_dirs())
-        return all_dirs
-
-    def size(self) -> int:
-        """
-        Returns: int the cumulative size of this directory and all it contains
-        """
-        return (
-            self.file_sz
-            + sum(f.size() for f in self.files)
-            + sum(d.size() if d else 0 for d in self.cd_directories.values())
-        )
-
-    def __repr__(self) -> str:
-        """
-        Return a string representation of the file
-        """
-        return " " * self.level + f"{self.ftype}: {self.name} SZ {self.size()}"
-
-
-class FileNode(FileSystemNode):
+@dataclass
+class FileNode:
     """
     File tree file node abstraction
     Has an explicit size but can hold no other files or directories
     """
 
-    def __init__(self, name: str, sz: int, level: int) -> None:
+    name: str
+    file_size: int
+
+    def size(self) -> int:
         """
-        Constructor for a FileNode object
-        Params:
-            name: name of the file
-            sz: size of the file
-            level: directory depth of the file
+        Return the file size - satisfy the callable interface
+        Params: self
+        Return: size of the file
         """
-        super().__init__(name, sz, level, "FILE")
+        return self.file_size
 
 
-class DirectoryNode(FileSystemNode):
+class DirectoryNode:
     """
     File tree directory node abstraction
     Has no intrinsic size but contains other files and directories
     """
 
-    def __init__(
-        self, name: str, parent: Optional["DirectoryNode"], level: int
-    ) -> None:
+    def __init__(self, name: str, parent: Optional["DirectoryNode"]) -> None:
         """
         Constructor for a DirectoryNode object
         Params:
             name: name of the directory
             parent: Parent object of this directory
-            level: Depth of the directory
         """
-        super().__init__(name, 0, level, "DIR")
+        self.name = name
         self.parent = parent
+        self.directories: Dict[str, Optional["DirectoryNode"]] = {}
         self.directories["."] = self
         self.directories[name] = self
         self.directories[".."] = parent
+        self.cd_directories: Dict[str, DirectoryNode] = {}
+        self.files: List[FileNode] = []
+
+    def walk_dirs(self) -> List["DirectoryNode"]:
+        """
+        walk_dirs returns all subdirectories recursively
+        Params:
+            self
+        Returns: list of all subdirectories
+        """
+        all_dirs: List[DirectoryNode] = []
+        for my_dir in self.cd_directories.values():
+            all_dirs.append(my_dir)
+            all_dirs.extend(my_dir.walk_dirs())
+        return all_dirs
 
     def add_directory(self, dirname: str) -> None:
         """
@@ -101,7 +67,7 @@ class DirectoryNode(FileSystemNode):
             dirname: name of the directory
         Returns: None
         """
-        self.cd_directories[dirname] = DirectoryNode(dirname, self, self.level + 1)
+        self.cd_directories[dirname] = DirectoryNode(dirname, self)
         self.directories[dirname] = self.cd_directories[dirname]
 
     def add_file(self, fname: str, f_sz: int) -> None:
@@ -112,7 +78,18 @@ class DirectoryNode(FileSystemNode):
             sz: size of the file
         Returns: None
         """
-        self.files.append(FileNode(fname, f_sz, self.level))
+        self.files.append(FileNode(fname, f_sz))
+
+    def size(self) -> int:
+        """
+        Returns the recursive size of all nodes in this directory.
+        Params: self
+        Returns: size as integer
+        """
+        return sum(d.size() for d in list(self.cd_directories.values()) + self.files)
+
+    def __repr__(self) -> str:
+        return f"DIR {self.name}"
 
 
 def change_directory(dnode: DirectoryNode, newdir: str) -> Optional[DirectoryNode]:
@@ -195,7 +172,7 @@ def main(fname: str) -> None:
     with open(fname, "r", encoding="utf-8") as infile:
         lines = [line.rstrip("\n") for line in infile.readlines()]
         current_line = 0
-        root_directory: Optional[DirectoryNode] = DirectoryNode("/", None, 0)
+        root_directory: Optional[DirectoryNode] = DirectoryNode("/", None)
         current_directory = root_directory
 
         while current_line < len(lines):
@@ -208,6 +185,7 @@ def main(fname: str) -> None:
 
         total = 0
         for f_dir in all_dirs:
+            print(f"f_dir {f_dir}")
             if f_dir.size() < 100000:
                 total += f_dir.size()
             print(f"DIR {f_dir.name}: Sz {f_dir.size()}")
