@@ -41,10 +41,13 @@ class TestOperation:
             all_monkeys: Dictionary mapping monkey ids to monkey objects
         Returns: None
         """
-        if worry % self.divisor == 0:
-            all_monkeys[self.throw_true_monkey].item_worries.append(worry)
-        else:
-            all_monkeys[self.throw_false_monkey].item_worries.append(worry)
+
+        monkey = (
+            all_monkeys[self.throw_true_monkey]
+            if worry % self.divisor == 0
+            else all_monkeys[self.throw_false_monkey]
+        )
+        monkey.item_worries.append(worry)
 
 
 def parse_test_operation(lines: List[str]) -> TestOperation:
