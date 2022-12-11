@@ -4,12 +4,15 @@ Python solution for Advent of Code 2022 Day 9
 import argparse
 from typing import List, Set, Tuple, NamedTuple
 
+
 class Move(NamedTuple):
     """
     Object abstraction of a Move
     """
+
     dir: str
     val: int
+
 
 def make_move(move_str: str) -> Move:
     """
@@ -35,7 +38,7 @@ def clamp(val: int, low: int, high: int) -> int:
     Return:
         clamped magnitude
     """
-    return low if val < low else high if val > high else val
+    return max(low, min(val, high))
 
 
 def do_move(pos: Tuple[int, int], delta: Tuple[int, int]) -> Tuple[int, int]:
