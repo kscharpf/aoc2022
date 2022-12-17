@@ -1,46 +1,78 @@
+"""
+Advent of Code Day 13
+"""
 import argparse
 import ast
-from typing import Union, List
-from enum import Enum
+from typing import Union, List, Any
 import functools
 
 LESS = -1
 EQUAL = 0
 GREATER = 1
 
+def int_compare(val1: int, val2: int) -> int:
+    """
+    Compare two ints
+    Params:
+        val1: integer
+        val2: integer
+    Returns: int - comparison value
+    """
+    if val1 < val2:
+        return LESS
+    if val1 > val2:
+        return GREATER
+    return EQUAL
 
-def compare(v1: Union[List[int], int], v2: Union[List[int], int]) -> int:
-    if isinstance(v1, int) and isinstance(v2, int):
-        if v1 < v2:
+def list_compare(val1: List[Any], val2: List[Any]) -> int:
+    """
+    Compare two lists
+    Params:
+        val1: list of integers
+        val2: list of integers
+    Returns: int - comparison
+    """
+    for entry1, entry2 in zip(val1, val2):
+        result = compare(entry1, entry2)
+        if result == LESS:
             return LESS
-        if v1 > v2:
+        if result == GREATER:
             return GREATER
-        return EQUAL
-    if isinstance(v1, list) and isinstance(v2, list):
-        for x, y in zip(v1, v2):
-            result = compare(x, y)
-            if result == LESS:
-                return LESS
-            if result == GREATER:
-                return GREATER
-        if len(v1) < len(v2):
-            return LESS
-        if len(v1) > len(v2):
-            return GREATER
-        return EQUAL
-    if isinstance(v1, list):
-        return compare(v1, [v2])
-    return compare([v1], v2)
+    if len(val1) < len(val2):
+        return LESS
+    if len(val1) > len(val2):
+        return GREATER
+    return EQUAL
+
+
+def compare(val1: Union[List[Any], int], val2: Union[List[Any], int]) -> int:
+    """
+    Comparison of integers and lists
+    Params:
+        val1: integer or list
+        val2: integer or list
+    Returns: Comparison value
+    """
+    if isinstance(val1, int) and isinstance(val2, int):
+        return int_compare(val1, val2)
+    if isinstance(val1, list) and isinstance(val2, list):
+        return list_compare(val1, val2)
+    if isinstance(val1, list):
+        return compare(val1, [val2])
+    return compare([val1], val2)
 
 
 def main(fname: str) -> None:
+    """
+    Program entry
+    """
     with open(fname, "r", encoding="utf-8") as infile:
         lines = infile.readlines()
         proper_order = 0
         index_sum = 0
         i = 0
         pair_index = 1
-        packets: List[Union[List, int]] = []
+        packets: List[Union[List[Any], int]] = []
         while i < len(lines) - 1:
             left_packet = ast.literal_eval(lines[i])
             right_packet = ast.literal_eval(lines[i + 1])
@@ -63,7 +95,7 @@ def main(fname: str) -> None:
         result = 1
         for i, packet in enumerate(packets):
             if packet in ([[2]], [[6]]):
-                result *= (i+1)
+                result *= i + 1
         print(f"Part 2: {result}")
 
 
