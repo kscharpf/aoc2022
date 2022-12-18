@@ -2,7 +2,7 @@ import re
 import argparse
 from dataclasses import dataclass, field
 from typing import List, NamedTuple
-from shapely import Polygon, geometry
+from shapely import Polygon, geometry, MultiPolygon
 from shapely.ops import unary_union
 
 
@@ -78,12 +78,12 @@ def main(filename: str, min_coord: int, max_coord: int) -> None:
             min_coord, min_coord, max_coord, max_coord
         )
         remainder = filter_excluded(full_area, exclusion_zone)
-        print(remainder)
-        remainder.simplify(tolerance=1)
+        if isinstance(remainder, MultiPolygon):
+            # example problem leaves us with a disjoint polygon
+            remainder = remainder.geoms[0]
         x_center = round((remainder.bounds[0] + remainder.bounds[2]) / 2)
         y_center = round((remainder.bounds[1] + remainder.bounds[3]) / 2)
         print(remainder)
-        print(remainder.bounds)
         print(x_center, y_center)
         print(x_center * 4000000 + y_center)
 
